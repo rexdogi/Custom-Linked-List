@@ -1,12 +1,7 @@
 package Elementai;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.stream.Stream;
 
 /**
  * Created by Paulius on 9/8/2016.
@@ -15,19 +10,20 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        ElementuSarasas<Object> elemList = new ElementuSarasas<>();
-        List list = new FailuApdorojimas().nuskaityti("duomenys.txt");
+        ElementuSarasas<Asmuo> elemList = new ElementuSarasas<>();
+        List<Asmuo> list = new FailoApdorojimas().nuskaityti("duomenys.txt");
+        list.forEach(elemList::init);
+        Asmuo a = new Asmuo("Adam","LUL", 60);
+        elemList.salinti(asmuo -> asmuo.getVardas().equalsIgnoreCase("Leo"));
 
-        //list.forEach(e -> elemList.prideti((Integer) e));
-        list.forEach(e -> elemList.prideti(Integer.parseInt((String)e)));
+      /*  elemList.prideti(a);
+        elemList.prideti(new Asmuo("lul","lul", 40));
 
-       // list.isvestiVisus();
+        elemList.salinti(z -> z.getAmzius() == 50);*/
+      //elemList.salinti(elemList.filtruoti(amzius -> amzius.getAmzius() > 0).gautiPirma());
+        //elemList.filtruoti(duom -> duom.getAmzius() > 50).forEach(d -> System.out.println(d.getAmzius()));
+        elemList.filtruoti(age -> age.getAmzius() > 30).forEach(d -> System.out.println(d.getVardas()));
 
-       // elemList.salinti(7);
-
-        elemList.isvestiVisus();
-
-      //  System.out.println(list.gautiPirmaElem().sekantis.ankstesnis.duom);
     }
 
 }

@@ -1,17 +1,20 @@
 package Elementai;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.function.Predicate;
 
 /**
  * Created by Paulius on 10/13/2016.
  */
-public class ElementuSarasas<Tipas> {
+public class ElementuSarasas<Tipas> implements Iterable<Tipas> {
 
-    private Elem<Tipas> head;
-    private FailuApdorojimas apdorojimas = new FailuApdorojimas();
+    private String failas = null;
+    private Elementas<Tipas> head;
+    private FailoApdorojimas apdorojimas = new FailoApdorojimas();
 
     public void isvestiVisus() {
-        Elem laikinas = this.head;
+        Elementas laikinas = this.head;
         while (laikinas != null) {
             System.out.println(laikinas.duom);
             laikinas = laikinas.sekantis;
@@ -26,7 +29,22 @@ public class ElementuSarasas<Tipas> {
         }
     }
 
-    public void prideti(Tipas tipas) {
+    public void prideti(Tipas tipas) throws IOException {
+        if(tipas instanceof Asmuo) apdorojimas.papildyti((Asmuo)tipas);
+        if (head == null) {
+            sukurtiElementa(tipas);
+            return;
+        }
+        if (tipas instanceof Integer) {
+            pridetPagalSkaiciu(tipas);
+        } else if (tipas instanceof String) {
+
+        } else {
+            pridetiGale(tipas);
+        }
+    }
+
+    public void init(Tipas tipas) {
         if (head == null) {
             sukurtiElementa(tipas);
             return;
@@ -44,7 +62,7 @@ public class ElementuSarasas<Tipas> {
      * Sukuria pirmajį elementą head jeigu jis neegzistuoja
      */
     public void sukurtiElementa(Tipas tipas) {
-        this.head = new Elem<>(tipas, null, null);
+        this.head = new Elementas<>(tipas, null, null);
         //  new FailoRasymas(this.head.duom.toString());
     }
 
@@ -52,7 +70,7 @@ public class ElementuSarasas<Tipas> {
      * Prideda duomenų tipą Integer pagal reikšmę.
      */
     private void pridetPagalSkaiciu(Tipas tipas) {
-        Elem<Tipas> laikinas = this.head;
+        Elementas<Tipas> laikinas = this.head;
 
         if (laikinas.duom == tipas) {
             System.out.println("priekyje");
@@ -71,10 +89,10 @@ public class ElementuSarasas<Tipas> {
             if (laikinas.sekantis == null) {
                 pridetiGale(tipas);
             } else {
-                laikinas.sekantis = new Elem<>(tipas, laikinas.sekantis, laikinas);
+                laikinas.sekantis = new Elementas<>(tipas, laikinas.sekantis, laikinas);
             }
         } else {
-            this.head = new Elem<>(tipas, this.head, null);
+            this.head = new Elementas<>(tipas, this.head, null);
         }
         // new FailoRasymas(next.duom.toString());
     }
@@ -82,8 +100,8 @@ public class ElementuSarasas<Tipas> {
     /**
      * Prideda bet kurį duomenu tipą sarašo priekyje
      */
-    private void pridetiPriekyje(Tipas tipas) {
-        this.head = new Elem<>(tipas, head, null);
+    public void pridetiPriekyje(Tipas tipas) {
+        this.head = new Elementas<>(tipas, head, null);
     }
 
     /**
@@ -94,12 +112,11 @@ public class ElementuSarasas<Tipas> {
             sukurtiElementa(tipas);
             return;
         }
-        Elem laikinas = head;
+        Elementas laikinas = head;
         while (laikinas.sekantis != null) {
             laikinas = laikinas.sekantis;
         }
-        System.out.println("DEBUG: " + laikinas.duom);
-        laikinas.sekantis = new Elem<>(tipas, null, laikinas);
+        laikinas.sekantis = new Elementas<>(tipas, null, laikinas);
     }
 
     /**
@@ -113,15 +130,15 @@ public class ElementuSarasas<Tipas> {
      * Gražina paskutinio elemento duomenis iš sarašo
      */
     public Tipas gautiPaskutini() {
-        Elem<Tipas> laikinas = head;
+        Elementas<Tipas> laikinas = head;
         while (laikinas.sekantis != null) {
             laikinas = laikinas.sekantis;
         }
         return laikinas.duom;
     }
 
-    private Elem gautiPaskutiniElem() {
-        Elem<Tipas> laikinas = head;
+    private Elementas<Tipas> gautiPaskutiniElem() {
+        Elementas<Tipas> laikinas = head;
         while (laikinas.sekantis != null) {
             laikinas = laikinas.sekantis;
         }
@@ -129,7 +146,7 @@ public class ElementuSarasas<Tipas> {
     }
 
     public Tipas gautiPagalIndeksa(int index) {
-        Elem<Tipas> laikinas = this.head;
+        Elementas<Tipas> laikinas = this.head;
         for (int i = 0; i < index; i++) {
             laikinas = laikinas.sekantis;
         }
@@ -137,7 +154,7 @@ public class ElementuSarasas<Tipas> {
     }
 
     public int gautiPagalReiksme(Tipas value) {
-        Elem<Tipas> laikinas = this.head;
+        Elementas<Tipas> laikinas = this.head;
         int index = 0;
         while (laikinas.sekantis != null) {
             if (laikinas.duom != value) {
@@ -148,12 +165,12 @@ public class ElementuSarasas<Tipas> {
         return index;
     }
 
-    private Elem gautiPirmaElem() {
+    private Elementas gautiPirmaElem() {
         return this.head;
     }
 
-    public Elem<Tipas> gautiElementaPagalReiksme(Tipas value) {
-        Elem<Tipas> laikinas = this.head;
+    public Elementas<Tipas> gautiElementaPagalReiksme(Tipas value) {
+        Elementas<Tipas> laikinas = this.head;
         int index = 0;
         while (laikinas.sekantis != null) {
             if (laikinas.duom != value) {
@@ -167,13 +184,33 @@ public class ElementuSarasas<Tipas> {
     /**
      * Išema elementą pagal reikšmę iš sarašo
      */
-    public void salinti(Tipas tipas) {
-        Elem<Tipas> laikinas = this.head;
+    public void salinti(Tipas tipas) throws IOException {
+        Elementas<Tipas> laikinas = this.head;
         if (laikinas != null) {
             while (laikinas.sekantis != null) {
                 if (laikinas.duom.equals(tipas)) break;
                 laikinas = laikinas.sekantis;
             }
+            if(laikinas.duom instanceof Asmuo) apdorojimas.salinti((Asmuo) laikinas.duom);
+            if (laikinas.ankstesnis == null) {
+                salintiPirma();
+            } else if (laikinas.sekantis == null) {
+                salintiPaskutini();
+            } else {
+                laikinas.ankstesnis.sekantis = laikinas.sekantis;
+                laikinas.sekantis.ankstesnis = laikinas.ankstesnis;
+            }
+        }
+    }
+
+    public void salinti(Predicate<Tipas> tikrinimas) throws IOException {
+        Elementas<Tipas> laikinas = this.head;
+        if (laikinas != null) {
+            while (laikinas.sekantis != null) {
+                if (tikrinimas.test(laikinas.duom)) break;
+                laikinas = laikinas.sekantis;
+            }
+            if(laikinas.duom instanceof Asmuo) apdorojimas.salinti((Asmuo) laikinas.duom);
             if (laikinas.ankstesnis == null) {
                 salintiPirma();
             } else if (laikinas.sekantis == null) {
@@ -197,12 +234,48 @@ public class ElementuSarasas<Tipas> {
      * Išema paskutinį elementą iš sarašo
      */
     private void salintiPaskutini() {
-        Elem<Tipas> laikinas = head;
+        Elementas<Tipas> laikinas = head;
         while (laikinas.sekantis != null) {
             laikinas = laikinas.sekantis;
         }
         laikinas.ankstesnis.sekantis = null;
     }
 
+    public ElementuSarasas<Tipas> filtruoti(Predicate<Tipas> tikrinimas) {
+        Elementas<Tipas> laikinas = head;
+        ElementuSarasas<Tipas> elem = new ElementuSarasas<>();
+        while (laikinas != null) {
+            if(tikrinimas.test(laikinas.duom)) {
+                elem.pridetiPriekyje(laikinas.duom);
+            }
+            laikinas = laikinas.sekantis;
+        }
+        return elem;
+    }
 
+    @Override
+    public Iterator<Tipas> iterator() {
+        return new ManoIterator();
+    }
+
+    public class ManoIterator implements Iterator {
+
+        private Elementas<Tipas> laikinas = head;
+        private Elementas<Tipas> temp = null;
+
+        public boolean hasNext() {
+            return laikinas.sekantis != null;
+        }
+
+        public Tipas next() {
+            if(temp == null) {
+                temp = laikinas;
+                return temp.duom;
+            } else {
+                laikinas = laikinas.sekantis;
+                return laikinas.duom;
+            }
+
+        }
+    }
 }

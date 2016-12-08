@@ -11,13 +11,13 @@ package Elementai;
  Papildomas eile
  */
 
-public class Elem<Tipas> {
+public class Elementas<Tipas> {
 
     public Tipas duom;
-    public Elem<Tipas> sekantis;
-    public Elem<Tipas> ankstesnis;
+    public Elementas<Tipas> sekantis;
+    public Elementas<Tipas> ankstesnis;
 
-    Elem(Tipas duom, Elem<Tipas> priekyn, Elem<Tipas> ankstesnis) {
+    Elementas(Tipas duom, Elementas<Tipas> priekyn, Elementas<Tipas> ankstesnis) {
         this.duom = duom;
         this.sekantis = priekyn;
         this.ankstesnis = ankstesnis;
